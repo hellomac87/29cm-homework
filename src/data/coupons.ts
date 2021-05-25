@@ -1,3 +1,5 @@
+import { Coupon } from "store/types/coupon";
+
 // coupons.js
 export const coupons = [
   {
@@ -13,7 +15,7 @@ export const coupons = [
 ];
 
 export function getCoupons() {
-  return new Promise(function (resolve, reject) {
+  return new Promise<Coupon[]>(function (resolve, reject) {
     setTimeout(function () {
       resolve(coupons);
     }, 1000);
