@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { cartSlice, fetchCart } from "store/slices/cartSlice";
@@ -24,6 +24,18 @@ function CartPage() {
   function decreaseAmout(item_no: number) {
     dispatch(cartSlice.actions.decreaseAmountByItemNo(item_no));
   }
+
+  function calcPriceByAmount(price: number, amount: number) {
+    return price * amount;
+  }
+
+  const calcTotalPrice = useCallback(() => {
+    const total = data.reduce((acc, next) => {
+      return acc + next.price * next.amount;
+    }, 0);
+
+    return total;
+  }, [data]);
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -63,10 +75,17 @@ function CartPage() {
                     {"+"}
                   </AmountButton>
                 </ColAmount>
-                <ColPrice>{product.price}</ColPrice>
+                <ColPrice>
+                  {calcPriceByAmount(product.price, product.amount)}
+                </ColPrice>
               </Row>
             );
           })}
+
+        <TotalRow>
+          {"합계 금액 "}
+          {calcTotalPrice()}
+        </TotalRow>
       </Table>
     </Container>
   );
@@ -145,4 +164,13 @@ const ColPrice = styled.div`
   align-items: center;
   justify-content: center;
   width: 20%;
+`;
+
+const TotalRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  font-size: 24px;
 `;
