@@ -1,3 +1,5 @@
+import { Product } from "store/types/products";
+
 // productItems.js
 export const productItems = [
   {
@@ -103,7 +105,7 @@ export const productItems = [
 ];
 
 export function getProducts() {
-  return new Promise(function (resolve, reject) {
+  return new Promise<Product[]>(function (resolve, reject) {
     setTimeout(function () {
       resolve(productItems);
     }, 1000);
