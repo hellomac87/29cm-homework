@@ -9,6 +9,7 @@ interface ProductsState {
   error: boolean;
   data: Product[];
   per_page: number;
+  sort: "asc" | "desc"; // 'asc': 오름차운 | 'desc' : 내림차순
 }
 
 // Define the initial state using that type
@@ -17,6 +18,7 @@ const initialState: ProductsState = {
   error: false,
   data: [],
   per_page: 5,
+  sort: "desc",
 };
 
 export const productsSlice = createSlice({
@@ -28,7 +30,7 @@ export const productsSlice = createSlice({
       state.fetching = true;
     },
     success: (state, action: PayloadAction<Product[]>) => {
-      state.data = action.payload;
+      state.data = [...action.payload].sort((a, b) => b.score - a.score);
       state.fetching = false;
     },
     failure: (state, action) => {
