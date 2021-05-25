@@ -67,9 +67,13 @@ function ProductsPage() {
                 {"원"}
               </Price>
               <div>{product.score}</div>
-              <button type="button" onClick={() => handleCart(product.item_no)}>
-                {inCart ? "빼기" : "넣기"}
-              </button>
+              <CartButton
+                type="button"
+                onClick={() => handleCart(product.item_no)}
+                inCart={inCart}
+              >
+                {inCart ? "빼기" : "담기"}
+              </CartButton>
             </ProductItem>
           );
         })}
@@ -104,8 +108,8 @@ const List = styled.ul`
 `;
 
 const ProductItem = styled.li`
-  width: 20%;
-  padding: 5px;
+  width: 33.333%;
+  padding: 12px;
 `;
 
 const ImageWrap = styled.div`
@@ -149,4 +153,19 @@ const Price = styled.div`
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 10px;
+`;
+
+const CartButton = styled.button<{ inCart: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 86px;
+  height: 30px;
+  border: 1px solid #333;
+
+  background-color: ${(props) => (props.inCart ? "#fff" : "#333")};
+  color: ${(props) => (props.inCart ? "#333" : "#fff")};
+
+  cursor: pointer;
 `;
