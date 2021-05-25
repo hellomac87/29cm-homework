@@ -10,6 +10,7 @@ interface ProductsState {
   data: Product[];
   per_page: number;
   sort: "asc" | "desc"; // 'asc': 오름차운 | 'desc' : 내림차순
+  current_page: number;
 }
 
 // Define the initial state using that type
@@ -19,6 +20,7 @@ const initialState: ProductsState = {
   data: [],
   per_page: 5,
   sort: "desc",
+  current_page: 1,
 };
 
 export const productsSlice = createSlice({
@@ -36,6 +38,9 @@ export const productsSlice = createSlice({
     failure: (state, action) => {
       state.error = true;
       state.fetching = false;
+    },
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.current_page = action.payload;
     },
   },
 });

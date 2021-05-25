@@ -4,15 +4,20 @@ import Pagination from "components/Pagination";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
-import { fetchProducts } from "store/slices/productsSlice";
+import { fetchProducts, productsSlice } from "store/slices/productsSlice";
 import styled from "styled-components";
+import { paginate } from "utils/paginate";
 
 function ProductsPage() {
   const dispatch = useDispatch();
 
-  const { fetching, error, data, per_page } = useSelector(
+  const { fetching, error, data, per_page, current_page } = useSelector(
     (state: RootState) => state.products
   );
+
+  const onClickPagination = (pageNumber: number) => {
+    dispatch(productsSlice.actions.setCurrentPage(pageNumber));
+  };
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -24,7 +29,7 @@ function ProductsPage() {
   return (
     <Container>
       <List>
-        {data.map((product) => (
+        {paginate(data, current_page, per_page).map((product) => (
           <ProductItem key={product.item_no}>
             <ImageWrap>
               <ImagePositioner>
@@ -41,7 +46,12 @@ function ProductsPage() {
           </ProductItem>
         ))}
       </List>
-      <Pagination per_page={per_page} total={data.length} />
+      <Pagination
+        per_page={per_page}
+        total={data.length}
+        current_page={current_page}
+        onClick={onClickPagination}
+      />
     </Container>
   );
 }
@@ -52,6 +62,8 @@ const Container = styled.div`
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
+
+  padding: 50px 0;
 `;
 
 const List = styled.ul`
