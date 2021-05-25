@@ -1,6 +1,7 @@
 import Error from "components/Error";
 import Loader from "components/Loader";
 import Pagination from "components/Pagination";
+import useLocalStorage from "hooks/useLocalStorage";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
@@ -10,13 +11,34 @@ import { paginate } from "utils/paginate";
 
 function ProductsPage() {
   const dispatch = useDispatch();
-
+  const [cartItemIds, setCartItemIds] = useLocalStorage<number[]>(
+    "cart_item_ids",
+    []
+  );
   const { fetching, error, data, per_page, current_page } = useSelector(
     (state: RootState) => state.products
   );
 
   const onClickPagination = (pageNumber: number) => {
     dispatch(productsSlice.actions.setCurrentPage(pageNumber));
+  };
+
+  const handleCart = (item_no: number) => {
+    const hasId = cartItemIds.includes(item_no);
+    let newCartItemIds: number[] = [];
+
+    if (hasId) {
+      // remove
+      newCartItemIds = cartItemIds.filter((id: number) => id !== item_no);
+    } else {
+      // add
+      if (cartItemIds.length > 2) {
+        alert("상품은 3개 까지만 담을 수 있습니다.");
+        return;
+      }
+      newCartItemIds = [...cartItemIds, item_no];
+    }
+    setCartItemIds(newCartItemIds);
   };
 
   useEffect(() => {
@@ -29,22 +51,28 @@ function ProductsPage() {
   return (
     <Container>
       <List>
-        {paginate(data, current_page, per_page).map((product) => (
-          <ProductItem key={product.item_no}>
-            <ImageWrap>
-              <ImagePositioner>
-                <img src={product.detail_image_url} alt={product.item_name} />
-              </ImagePositioner>
-            </ImageWrap>
+        {paginate(data, current_page, per_page).map((product) => {
+          const inCart = cartItemIds.includes(product.item_no);
+          return (
+            <ProductItem key={product.item_no}>
+              <ImageWrap>
+                <ImagePositioner>
+                  <img src={product.detail_image_url} alt={product.item_name} />
+                </ImagePositioner>
+              </ImageWrap>
 
-            <Name>{product.item_name}</Name>
-            <Price>
-              {product.price}
-              {"원"}
-            </Price>
-            <div>{product.score}</div>
-          </ProductItem>
-        ))}
+              <Name>{product.item_name}</Name>
+              <Price>
+                {product.price}
+                {"원"}
+              </Price>
+              <div>{product.score}</div>
+              <button type="button" onClick={() => handleCart(product.item_no)}>
+                {inCart ? "빼기" : "넣기"}
+              </button>
+            </ProductItem>
+          );
+        })}
       </List>
       <Pagination
         per_page={per_page}
