@@ -1,4 +1,5 @@
 import Error from "components/Error";
+import Header from "components/Header";
 import Loader from "components/Loader";
 import Pagination from "components/Pagination";
 import useLocalStorage from "hooks/useLocalStorage";
@@ -50,6 +51,7 @@ function ProductsPage() {
 
   return (
     <Container>
+      <Header cartCount={cartItemIds.length} />
       <List>
         {paginate(data, current_page, per_page).map((product) => {
           const inCart = cartItemIds.includes(product.item_no);
@@ -95,7 +97,7 @@ const Container = styled.div`
   max-width: 1280px;
   margin: 0 auto;
 
-  padding: 50px 0;
+  padding-bottom: 50px;
 `;
 
 const List = styled.ul`
