@@ -8,6 +8,7 @@ interface ProductsState {
   fetching: boolean;
   error: boolean;
   data: Product[];
+  per_page: number;
 }
 
 // Define the initial state using that type
@@ -15,6 +16,7 @@ const initialState: ProductsState = {
   fetching: false,
   error: false,
   data: [],
+  per_page: 5,
 };
 
 export const productsSlice = createSlice({
