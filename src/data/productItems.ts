@@ -1,7 +1,7 @@
 import { Product } from "store/types/products";
 
 // productItems.js
-export const productItems = [
+export const productItems: Product[] = [
   {
     item_no: 122997,
     item_name: "스탠리 클래식 런치박스",

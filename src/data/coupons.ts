@@ -1,7 +1,7 @@
 import { Coupon } from "store/types/coupon";
 
 // coupons.js
-export const coupons = [
+export const coupons: Coupon[] = [
   {
     type: "rate",
     title: "10% 할인 쿠폰",
