@@ -4,5 +4,6 @@ export type CartItem = {
   detail_image_url: string;
   price: number;
   score: number;
+  availableCoupon?: boolean;
   amount: number;
 };

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { cartSlice, fetchCart } from "store/slices/cartSlice";
@@ -7,6 +7,8 @@ import Error from "components/Error";
 import Loader from "components/Loader";
 import useLocalStorage from "hooks/useLocalStorage";
 import { CartItem } from "store/types/cart";
+import { fetchCoupons } from "store/slices/couponsSlice";
+import { Coupon } from "store/types/coupon";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -15,10 +17,12 @@ function CartPage() {
     []
   );
   const [checkedIds, setCheckedIds] = useState<number[]>(cartItemIds);
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const { fetching, error, data } = useSelector(
     (state: RootState) => state.cart
   );
+  const { data: coupons } = useSelector((state: RootState) => state.coupons);
 
   function increaseAmout(item_no: number) {
     dispatch(cartSlice.actions.increaseAmountByItemNo(item_no));
@@ -39,9 +43,19 @@ function CartPage() {
   }
 
   function calcTotalPrice(cartItems: CartItem[]) {
+    // filter checkedIds
     cartItems = cartItems.filter((cartItem) =>
       checkedIds.includes(cartItem.item_no)
     );
+
+    // 쿠폰이 선택되었다면
+    if (selectedCoupon) {
+      // filter availableCoupon == false
+      cartItems = cartItems.filter(
+        (cartItem) => !(cartItem.availableCoupon === false)
+      );
+    }
+
     const total = cartItems.reduce((acc, next) => {
       return acc + next.price * next.amount;
     }, 0);
@@ -75,8 +89,10 @@ function CartPage() {
 
   useEffect(() => {
     dispatch(fetchCart());
+    dispatch(fetchCoupons());
   }, [dispatch]);
 
+  console.log(coupons);
   if (fetching || !data) return <Loader />;
   if (error) return <Error />;
 
@@ -86,13 +102,13 @@ function CartPage() {
     <Container>
       <h1>{"CartPage"}</h1>
       <Table>
-        <div>
+        <TableHead>
           <input
             type="checkbox"
             checked={cartItems.length === checkedIds.length}
             onChange={() => handleCheckAll(cartItems)}
           />
-        </div>
+        </TableHead>
         {cartItems.map((product) => {
           const checked = checkedIds.includes(product.item_no);
           return (
@@ -133,8 +149,18 @@ function CartPage() {
           );
         })}
 
+        <ul>
+          {coupons?.map((coupon, index) => {
+            return (
+              <li key={index}>
+                <div>{coupon.title}</div>
+              </li>
+            );
+          })}
+        </ul>
+
         <TotalRow>
-          {"합계 금액 "}
+          {"합계 금액 : "}
           {calcTotalPrice(cartItems)}
         </TotalRow>
       </Table>
