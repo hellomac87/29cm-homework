@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { cartSlice, fetchCart } from "store/slices/cartSlice";
@@ -14,6 +14,7 @@ function CartPage() {
     "cart_item_ids",
     []
   );
+  const [checkedIds, setCheckedIds] = useState<number[]>([]);
 
   const { fetching, error, data } = useSelector(
     (state: RootState) => state.cart
@@ -38,11 +39,38 @@ function CartPage() {
   }
 
   function calcTotalPrice(cartItems: CartItem[]) {
+    cartItems = cartItems.filter((cartItem) =>
+      checkedIds.includes(cartItem.item_no)
+    );
     const total = cartItems.reduce((acc, next) => {
       return acc + next.price * next.amount;
     }, 0);
 
     return total;
+  }
+
+  function handleCheck(item_no: number) {
+    const hasId = checkedIds.includes(item_no);
+    if (hasId) {
+      // remove
+      const newCheckedIds = checkedIds.filter(
+        (checkedId) => checkedId !== item_no
+      );
+      setCheckedIds(newCheckedIds);
+    } else {
+      // add
+      setCheckedIds([...checkedIds, item_no]);
+    }
+  }
+
+  function handleCheckAll(cartItems: CartItem[]) {
+    const removeAll = checkedIds.length === cartItems.length;
+    if (removeAll) {
+      setCheckedIds([]);
+    } else {
+      const ids = cartItems.map((cartItem) => cartItem.item_no);
+      setCheckedIds(ids);
+    }
   }
 
   useEffect(() => {
@@ -58,11 +86,23 @@ function CartPage() {
     <Container>
       <h1>{"CartPage"}</h1>
       <Table>
+        <div>
+          <input
+            type="checkbox"
+            checked={cartItems.length === checkedIds.length}
+            onChange={() => handleCheckAll(cartItems)}
+          />
+        </div>
         {cartItems.map((product) => {
+          const checked = checkedIds.includes(product.item_no);
           return (
             <Row key={product.item_no}>
               <ColCheckBox>
-                <input type="checkbox" checked={false} onChange={() => {}} />
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => handleCheck(product.item_no)}
+                />
               </ColCheckBox>
               <ColImage>
                 <img src={product.detail_image_url} alt={product.item_name} />
