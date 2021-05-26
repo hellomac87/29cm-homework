@@ -14,7 +14,7 @@ function CartPage() {
     "cart_item_ids",
     []
   );
-  const [checkedIds, setCheckedIds] = useState<number[]>([]);
+  const [checkedIds, setCheckedIds] = useState<number[]>(cartItemIds);
 
   const { fetching, error, data } = useSelector(
     (state: RootState) => state.cart
