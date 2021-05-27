@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-export function paginate(items: any[], pageNumber: number, pageSize: number) {
+export function paginate<T>(items: T[], pageNumber: number, pageSize: number) {
   const startIndex = (pageNumber - 1) * pageSize; // 자를 배열의 시작점
 
   return _(items)

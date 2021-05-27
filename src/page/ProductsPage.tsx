@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { fetchProducts, productsSlice } from "store/slices/productsSlice";
+import { Product } from "store/types/products";
 import styled from "styled-components";
 import { paginate } from "utils/paginate";
 
@@ -53,7 +54,7 @@ function ProductsPage() {
     <Container>
       <Header cartCount={cartItemIds.length} />
       <List>
-        {paginate(data, current_page, per_page).map((product) => {
+        {paginate<Product>(data, current_page, per_page).map((product) => {
           const inCart = cartItemIds.includes(product.item_no);
           return (
             <ProductItem key={product.item_no}>
@@ -64,6 +65,7 @@ function ProductsPage() {
               </ImageWrap>
 
               <Name>{product.item_name}</Name>
+              <div>{product.availableCoupon === false && "쿠폰 사용 불가"}</div>
               <Price>
                 {product.price}
                 {"원"}
