@@ -17,6 +17,7 @@ function CartPage() {
     []
   );
   const [checkedIds, setCheckedIds] = useState<number[]>(cartItemIds);
+  const [openSelect, setOpenSelect] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const { fetching, error, data } = useSelector(
@@ -43,24 +44,49 @@ function CartPage() {
   }
 
   function calcTotalPrice(cartItems: CartItem[]) {
+    let total = 0;
     // filter checkedIds
     cartItems = cartItems.filter((cartItem) =>
       checkedIds.includes(cartItem.item_no)
     );
 
-    // 쿠폰이 선택되었다면
-    if (selectedCoupon) {
-      // filter availableCoupon == false
-      cartItems = cartItems.filter(
-        (cartItem) => !(cartItem.availableCoupon === false)
-      );
+    const availableItems: CartItem[] = [];
+    const unavailableItems: CartItem[] = [];
+
+    for (const cartItem of cartItems) {
+      if (cartItem.availableCoupon === undefined) {
+        availableItems.push(cartItem);
+      } else {
+        unavailableItems.push(cartItem);
+      }
     }
 
-    const total = cartItems.reduce((acc, next) => {
+    const availableItemsTotalPrice = () => {
+      let availableTotalPrice = 0;
+      for (const availableItem of availableItems) {
+        availableTotalPrice += availableItem.price * availableItem.amount;
+      }
+      if (selectedCoupon && selectedCoupon.discountAmount) {
+        availableTotalPrice =
+          availableTotalPrice > 0
+            ? availableTotalPrice - selectedCoupon.discountAmount
+            : availableTotalPrice;
+      }
+      if (selectedCoupon && selectedCoupon.discountRate) {
+        availableTotalPrice =
+          availableTotalPrice -
+          availableTotalPrice * (selectedCoupon.discountRate / 100);
+      }
+
+      return availableTotalPrice;
+    };
+
+    const unavailableItemsTotalPrice = unavailableItems.reduce((acc, next) => {
       return acc + next.price * next.amount;
     }, 0);
+    console.log(availableItemsTotalPrice(), unavailableItemsTotalPrice);
 
-    return total;
+    return availableItemsTotalPrice() + unavailableItemsTotalPrice;
   }
 
   function handleCheck(item_no: number) {
@@ -87,17 +113,20 @@ function CartPage() {
     }
   }
 
+  function handleSelectCoupon(value: Coupon | null) {
+    setSelectedCoupon(value);
+  }
+
   useEffect(() => {
     dispatch(fetchCart());
     dispatch(fetchCoupons());
   }, [dispatch]);
 
-  console.log(coupons);
   if (fetching || !data) return <Loader />;
   if (error) return <Error />;
 
   const cartItems = filterByCartIds(data);
-
+  console.log(selectedCoupon);
   return (
     <Container>
       <h1>{"CartPage"}</h1>
@@ -125,6 +154,9 @@ function CartPage() {
               </ColImage>
               <ColName>
                 {product.item_name}
+                <br />
+                {product.availableCoupon === false && "쿠폰 사용 불가"}
+
                 <Price>{product.price}</Price>
               </ColName>
               <ColAmount>
@@ -149,15 +181,29 @@ function CartPage() {
           );
         })}
 
-        <ul>
-          {coupons?.map((coupon, index) => {
-            return (
-              <li key={index}>
-                <div>{coupon.title}</div>
-              </li>
-            );
-          })}
-        </ul>
+        <CouponSelect onClick={() => setOpenSelect(!openSelect)}>
+          <CouponSelectTitle>
+            {selectedCoupon ? selectedCoupon.title : "쿠폰 선택"}
+          </CouponSelectTitle>
+
+          {openSelect && (
+            <CouponList>
+              <CouponItem onClick={() => handleSelectCoupon(null)}>
+                {"쿠폰 선택"}
+              </CouponItem>
+              {coupons?.map((coupon, index) => {
+                return (
+                  <CouponItem
+                    key={index}
+                    onClick={() => handleSelectCoupon(coupon)}
+                  >
+                    {coupon.title}
+                  </CouponItem>
+                );
+              })}
+            </CouponList>
+          )}
+        </CouponSelect>
 
         <TotalRow>
           {"합계 금액 : "}
@@ -245,6 +291,23 @@ const ColPrice = styled.div`
   align-items: center;
   justify-content: center;
   width: 20%;
+`;
+
+const CouponSelect = styled.div`
+  position: relative;
+  width: auto;
+`;
+
+const CouponSelectTitle = styled.div`
+  width: 100%;
+`;
+
+const CouponList = styled.ul`
+  width: 100%;
+`;
+
+const CouponItem = styled.li`
+  width: 100%;
 `;
 
 const TotalRow = styled.div`
