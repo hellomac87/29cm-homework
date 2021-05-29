@@ -1,16 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "store";
-import { cartSlice, fetchCart } from "store/slices/cartSlice";
 import styled, { css } from "styled-components";
+import numeral from "numeral";
+
+import { RootState } from "store";
+import { CartItem } from "store/types/cart";
+import { Coupon } from "store/types/coupon";
+import { cartSlice, fetchCart } from "store/slices/cartSlice";
+import { fetchCoupons } from "store/slices/couponsSlice";
+
+import useOutsideClick from "hooks/useOutsideClick";
+import useLocalStorage from "hooks/useLocalStorage";
+
 import Error from "components/Error";
 import Loader from "components/Loader";
-import useLocalStorage from "hooks/useLocalStorage";
-import { CartItem } from "store/types/cart";
-import { fetchCoupons } from "store/slices/couponsSlice";
-import { Coupon } from "store/types/coupon";
-import useOutsideClick from "hooks/useOutsideClick";
-import numeral from "numeral";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -220,6 +223,10 @@ function CartPage() {
             </Row>
           );
         })}
+
+        {cartItems.length < 1 && (
+          <div>{"장바구니에 담긴 상품이 없습니다."}</div>
+        )}
 
         <CouponSelect
           onClick={() => setOpenSelect(!openSelect)}
