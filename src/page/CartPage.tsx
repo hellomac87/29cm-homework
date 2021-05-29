@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { cartSlice, fetchCart } from "store/slices/cartSlice";
@@ -9,6 +9,7 @@ import useLocalStorage from "hooks/useLocalStorage";
 import { CartItem } from "store/types/cart";
 import { fetchCoupons } from "store/slices/couponsSlice";
 import { Coupon } from "store/types/coupon";
+import useOutsideClick from "hooks/useOutsideClick";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -19,11 +20,14 @@ function CartPage() {
   const [checkedIds, setCheckedIds] = useState<number[]>(cartItemIds);
   const [openSelect, setOpenSelect] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const selectRef = useRef<HTMLDivElement | null>(null);
 
   const { fetching, error, data } = useSelector(
     (state: RootState) => state.cart
   );
   const { data: coupons } = useSelector((state: RootState) => state.coupons);
+
+  useOutsideClick(selectRef, () => setOpenSelect(false));
 
   function increaseAmout(item_no: number) {
     dispatch(cartSlice.actions.increaseAmountByItemNo(item_no));
@@ -189,7 +193,10 @@ function CartPage() {
           );
         })}
 
-        <CouponSelect onClick={() => setOpenSelect(!openSelect)}>
+        <CouponSelect
+          onClick={() => setOpenSelect(!openSelect)}
+          ref={selectRef}
+        >
           <CouponSelectTitle>
             {selectedCoupon ? selectedCoupon.title : "쿠폰 선택"}
           </CouponSelectTitle>
@@ -197,15 +204,20 @@ function CartPage() {
           {openSelect && (
             <CouponList>
               <CouponItem onClick={() => handleSelectCoupon(null)}>
-                {"쿠폰 선택"}
+                {"쿠폰 선택하지 않기"}
               </CouponItem>
               {coupons?.map((coupon, index) => {
+                const seleected =
+                  selectedCoupon !== null &&
+                  selectedCoupon.title === coupon.title;
                 return (
                   <CouponItem
                     key={index}
                     onClick={() => handleSelectCoupon(coupon)}
+                    selected={seleected}
                   >
-                    {coupon.title}
+                    <span>{coupon.title}</span>{" "}
+                    {seleected && <span>{"\u2714"}</span>}
                   </CouponItem>
                 );
               })}
@@ -241,7 +253,11 @@ const mixinColumnStyle = css`
 
 const generateFlex = (
   alignItems: "center" | "flex-start" | "flex-end" | "stretch" = "stretch",
-  justifyContent: "center" | "flex-start" | "flex-end" = "flex-start"
+  justifyContent:
+    | "center"
+    | "flex-start"
+    | "flex-end"
+    | "space-between" = "flex-start"
 ) => {
   return css`
     display: flex;
@@ -364,28 +380,52 @@ const AmountButton = styled.button`
 
 const ColPrice = styled.div`
   ${generateFlex("center", "center")}
+  font-size: 24px;
+  font-weight: bold;
 `;
 
 const CouponSelect = styled.div`
   position: relative;
-  width: auto;
+  width: 400px;
+  cursor: pointer;
+  margin-top: 30px;
 `;
 
 const CouponSelectTitle = styled.div`
-  width: 100%;
+  ${generateFlex("center", "flex-start")}
+  width:100%;
+  height: 45px;
+  padding: 0 24px;
+  border: 1px solid #d4d4d4;
+  font-size: 16px;
+  font-weight: bold;
 `;
 
 const CouponList = styled.ul`
   width: 100%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  border: solid #d4d4d4;
+  border-width: 0 1px 1px;
 `;
 
-const CouponItem = styled.li`
-  width: 100%;
+const CouponItem = styled.li<{ selected?: boolean }>`
+  ${generateFlex("center", "flex-start")}
+  width:100%;
+  height: 45px;
+  padding: 0 24px;
+  font-size: 16px;
+  font-weight: ${(props) => props.selected && "bold"};
+  color: ${(props) => (props.selected ? "#333" : "#d9d9d9")};
+  & > span {
+    margin-right: 10px;
+  }
 `;
 
 const TotalRow = styled.div`
   ${generateFlex("center", "flex-end")}
   width: 100%;
-  font-size: 24px;
+  font-size: 32px;
   font-weight: bold;
 `;
