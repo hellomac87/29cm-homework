@@ -26,7 +26,11 @@ function CartPage() {
   const { fetching, error, data } = useSelector(
     (state: RootState) => state.cart
   );
-  const { data: coupons } = useSelector((state: RootState) => state.coupons);
+  const {
+    fetching: fetchingCounpons,
+    error: errorCoupons,
+    data: coupons,
+  } = useSelector((state: RootState) => state.coupons);
 
   useOutsideClick(selectRef, () => setOpenSelect(false));
 
@@ -124,13 +128,21 @@ function CartPage() {
     setSelectedCoupon(value);
   }
 
+  function deleteCartItem(item_no: number) {
+    if (window.confirm("해당 상품을 장바구니에서 삭제하시겠습니까?")) {
+      const newCartItemIds = cartItemIds.filter((id: number) => id !== item_no);
+      setCartItemIds(newCartItemIds);
+      setCheckedIds(newCartItemIds);
+    }
+  }
+
   useEffect(() => {
     dispatch(fetchCart());
     dispatch(fetchCoupons());
   }, [dispatch]);
 
-  if (fetching || !data) return <Loader />;
-  if (error) return <Error />;
+  if (fetching || fetchingCounpons || !coupons || !data) return <Loader />;
+  if (error || errorCoupons) return <Error />;
 
   const cartItems = filterByCartIds(data);
 
@@ -151,6 +163,7 @@ function CartPage() {
           <div>{"상품정보"}</div>
           <div>{"수량"}</div>
           <div>{"가격"}</div>
+          <div />
         </TableHead>
         {cartItems.map((product) => {
           const checked = checkedIds.includes(product.item_no);
@@ -174,7 +187,9 @@ function CartPage() {
                   {product.item_name}
                   <Price>{`${numeral(product.price).format("0,0")}원`}</Price>
                   <br />
-                  {product.availableCoupon === false && "쿠폰 사용 불가"}
+
+                  {product.availableCoupon === false &&
+                    "해당 상품은 쿠폰 사용이 불가합니다."}
                 </ColName>
               </ColInfo>
 
@@ -197,6 +212,11 @@ function CartPage() {
                 {calcPriceByAmount(product.price, product.amount)}
                 {"원"}
               </ColPrice>
+              <ColDelete>
+                <span onClick={() => deleteCartItem(product.item_no)}>
+                  {"\u2716"}
+                </span>
+              </ColDelete>
             </Row>
           );
         })}
@@ -214,7 +234,7 @@ function CartPage() {
               <CouponItem onClick={() => handleSelectCoupon(null)}>
                 {"쿠폰 선택하지 않기"}
               </CouponItem>
-              {coupons?.map((coupon, index) => {
+              {coupons.map((coupon, index) => {
                 const seleected =
                   selectedCoupon !== null &&
                   selectedCoupon.title === coupon.title;
@@ -250,13 +270,16 @@ const mixinColumnStyle = css`
     width: 5%;
   }
   & > div:nth-child(2) {
-    width: 55%;
+    width: 50%;
   }
   & > div:nth-child(3) {
     width: 20%;
   }
   & > div:nth-child(4) {
     width: 20%;
+  }
+  & > div:nth-child(5) {
+    width: 5%;
   }
 `;
 
@@ -395,6 +418,15 @@ const ColPrice = styled.div`
   ${generateFlex("center", "center")}
   font-size: 24px;
   font-weight: bold;
+  border-right: 1px solid #d4d4d4;
+`;
+
+const ColDelete = styled.div`
+  ${generateFlex("center", "center")}
+  font-size: 24px;
+  span {
+    cursor: pointer;
+  }
 `;
 
 const CouponSelect = styled.div`
