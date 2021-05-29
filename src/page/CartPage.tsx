@@ -10,6 +10,7 @@ import { CartItem } from "store/types/cart";
 import { fetchCoupons } from "store/slices/couponsSlice";
 import { Coupon } from "store/types/coupon";
 import useOutsideClick from "hooks/useOutsideClick";
+import numeral from "numeral";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -38,7 +39,8 @@ function CartPage() {
   }
 
   function calcPriceByAmount(price: number, amount: number) {
-    return price * amount;
+    const result = price * amount;
+    return numeral(result).format("0,0");
   }
 
   function filterByCartIds(cartItems: CartItem[]) {
@@ -89,7 +91,9 @@ function CartPage() {
       return acc + next.price * next.amount;
     }, 0);
 
-    return availableItemsTotalPrice() + unavailableItemsTotalPrice;
+    total = availableItemsTotalPrice() + unavailableItemsTotalPrice;
+
+    return numeral(total).format("0,0");
   }
 
   function handleCheck(item_no: number) {
@@ -129,17 +133,18 @@ function CartPage() {
   if (error) return <Error />;
 
   const cartItems = filterByCartIds(data);
-  console.log(selectedCoupon);
+
   return (
     <Container>
       <Title>{"CartPage"}</Title>
       <Table>
         <TableHead>
           <div>
-            <input
+            <CheckBox
               type="checkbox"
               checked={cartItems.length === checkedIds.length}
               onChange={() => handleCheckAll(cartItems)}
+              style={{}}
             />
           </div>
 
@@ -152,10 +157,13 @@ function CartPage() {
           return (
             <Row key={product.item_no}>
               <ColCheckBox>
-                <input
+                <CheckBox
                   type="checkbox"
                   checked={checked}
                   onChange={() => handleCheck(product.item_no)}
+                  style={{
+                    transform: "scale(1.5)",
+                  }}
                 />
               </ColCheckBox>
               <ColInfo>
@@ -164,7 +172,7 @@ function CartPage() {
                 </ColImage>
                 <ColName>
                   {product.item_name}
-                  <Price>{`${product.price.toLocaleString()}원`}</Price>
+                  <Price>{`${numeral(product.price).format("0,0")}원`}</Price>
                   <br />
                   {product.availableCoupon === false && "쿠폰 사용 불가"}
                 </ColName>
@@ -187,6 +195,7 @@ function CartPage() {
               </ColAmount>
               <ColPrice>
                 {calcPriceByAmount(product.price, product.amount)}
+                {"원"}
               </ColPrice>
             </Row>
           );
@@ -227,6 +236,7 @@ function CartPage() {
         <TotalRow>
           {"합계 금액 : "}
           {calcTotalPrice(cartItems)}
+          {"원"}
         </TotalRow>
       </Table>
     </Container>
@@ -314,6 +324,10 @@ const Row = styled.div`
 
 const ColCheckBox = styled.div`
   ${generateFlex("center", "center")}
+`;
+
+const CheckBox = styled.input`
+  transform: scale(1.5);
 `;
 
 const ColInfo = styled.div`
