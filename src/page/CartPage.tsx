@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "store";
 import { cartSlice, fetchCart } from "store/slices/cartSlice";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import Error from "components/Error";
 import Loader from "components/Loader";
 import useLocalStorage from "hooks/useLocalStorage";
@@ -129,14 +129,20 @@ function CartPage() {
   console.log(selectedCoupon);
   return (
     <Container>
-      <h1>{"CartPage"}</h1>
+      <Title>{"CartPage"}</Title>
       <Table>
         <TableHead>
-          <input
-            type="checkbox"
-            checked={cartItems.length === checkedIds.length}
-            onChange={() => handleCheckAll(cartItems)}
-          />
+          <div>
+            <input
+              type="checkbox"
+              checked={cartItems.length === checkedIds.length}
+              onChange={() => handleCheckAll(cartItems)}
+            />
+          </div>
+
+          <div>{"상품정보"}</div>
+          <div>{"수량"}</div>
+          <div>{"가격"}</div>
         </TableHead>
         {cartItems.map((product) => {
           const checked = checkedIds.includes(product.item_no);
@@ -149,16 +155,18 @@ function CartPage() {
                   onChange={() => handleCheck(product.item_no)}
                 />
               </ColCheckBox>
-              <ColImage>
-                <img src={product.detail_image_url} alt={product.item_name} />
-              </ColImage>
-              <ColName>
-                {product.item_name}
-                <br />
-                {product.availableCoupon === false && "쿠폰 사용 불가"}
+              <ColInfo>
+                <ColImage>
+                  <img src={product.detail_image_url} alt={product.item_name} />
+                </ColImage>
+                <ColName>
+                  {product.item_name}
+                  <Price>{`${product.price.toLocaleString()}원`}</Price>
+                  <br />
+                  {product.availableCoupon === false && "쿠폰 사용 불가"}
+                </ColName>
+              </ColInfo>
 
-                <Price>{product.price}</Price>
-              </ColName>
               <ColAmount>
                 <AmountButton
                   type="button"
@@ -216,13 +224,46 @@ function CartPage() {
 
 export default CartPage;
 
+const mixinColumnStyle = css`
+  & > div:nth-child(1) {
+    width: 5%;
+  }
+  & > div:nth-child(2) {
+    width: 55%;
+  }
+  & > div:nth-child(3) {
+    width: 20%;
+  }
+  & > div:nth-child(4) {
+    width: 20%;
+  }
+`;
+
+const generateFlex = (
+  alignItems: "center" | "flex-start" | "flex-end" | "stretch" = "stretch",
+  justifyContent: "center" | "flex-start" | "flex-end" = "flex-start"
+) => {
+  return css`
+    display: flex;
+    align-items: ${alignItems};
+    justify-content: ${justifyContent};
+  `;
+};
+
 const Container = styled.div`
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
 
-  padding-top: 20px;
+  padding: 20px 24px;
   margin-bottom: 3.75%;
+`;
+
+const Title = styled.h1`
+  width: 100%;
+  font-size: 24px;
+  font-weight: bolder;
+  margin-bottom: 12px;
 `;
 
 const Table = styled.div`
@@ -231,53 +272,88 @@ const Table = styled.div`
   font-size: 12px;
 `;
 
-const TableHead = styled.div``;
-
-const Row = styled.div`
+const TableHead = styled.div`
+  ${generateFlex("stretch", "flex-start")}
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-start;
   width: 100%;
+  height: 74px;
+  border-bottom: 1px solid #d4d4d4;
+  div {
+    ${generateFlex("center", "center")}
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    color: #000;
+  }
+  ${mixinColumnStyle}
+`;
+
+const Row = styled.div`
+  ${generateFlex("stretch", "flex-start")}
+  width: 100%;
+  border-bottom: 1px solid #d4d4d4;
+  ${mixinColumnStyle}
 `;
 
 const ColCheckBox = styled.div`
-  width: 5%;
+  ${generateFlex("center", "center")}
+`;
+
+const ColInfo = styled.div`
+  ${generateFlex("center", "center")}
 `;
 
 const ColImage = styled.div`
-  width: 20%;
+  width: 30%;
   img {
     width: 100%;
+    vertical-align: bottom;
   }
 `;
 
 const ColName = styled.div`
-  width: 35%;
+  width: 70%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
 `;
 
 const Price = styled.div`
   width: 100%;
+  font-size: 14px;
+  font-weight: normal;
+  margin-top: 14px;
 `;
 
 const ColAmount = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  ${generateFlex("center", "center")}
+
   width: 20%;
   font-size: 24px;
   font-weight: normal;
+
+  border: solid #d4d4d4;
+  border-width: 0 1px;
 `;
 
 const Amount = styled.div`
-  display: inline-block;
+  ${generateFlex("center", "center")}
+  display: inline-flex;
+  height: 36px;
   padding: 0 12px;
+  border: 1px solid #d4d4d4;
+  border-width: 1px 0;
+  font-size: 18px;
 `;
 
 const AmountButton = styled.button`
-  width: 32px;
-  height: 32px;
+  ${generateFlex("center", "center")}
+  width: 36px;
+  height: 36px;
   font-size: 24px;
-  border: 1px solid #333;
+  border: 1px solid #d4d4d4;
   background: #fff;
   cursor: pointer;
   transition: background-color 0.1s ease;
@@ -287,10 +363,7 @@ const AmountButton = styled.button`
 `;
 
 const ColPrice = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20%;
+  ${generateFlex("center", "center")}
 `;
 
 const CouponSelect = styled.div`
@@ -311,10 +384,8 @@ const CouponItem = styled.li`
 `;
 
 const TotalRow = styled.div`
+  ${generateFlex("center", "flex-end")}
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
   font-size: 24px;
+  font-weight: bold;
 `;
