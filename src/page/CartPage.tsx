@@ -183,14 +183,14 @@ function CartPage() {
                   type="button"
                   onClick={() => decreaseAmout(product.item_no)}
                 >
-                  {"-"}
+                  {"\u2796"}
                 </AmountButton>
                 <Amount>{product.amount}</Amount>
                 <AmountButton
                   type="button"
                   onClick={() => increaseAmout(product.item_no)}
                 >
-                  {"+"}
+                  {"\u2795"}
                 </AmountButton>
               </ColAmount>
               <ColPrice>
@@ -328,6 +328,7 @@ const ColCheckBox = styled.div`
 
 const CheckBox = styled.input`
   transform: scale(1.5);
+  cursor: pointer;
 `;
 
 const ColInfo = styled.div`
@@ -381,7 +382,6 @@ const AmountButton = styled.button`
   ${generateFlex("center", "center")}
   width: 36px;
   height: 36px;
-  font-size: 24px;
   border: 1px solid #d4d4d4;
   background: #fff;
   cursor: pointer;
