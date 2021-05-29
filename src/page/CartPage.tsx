@@ -88,7 +88,6 @@ function CartPage() {
     const unavailableItemsTotalPrice = unavailableItems.reduce((acc, next) => {
       return acc + next.price * next.amount;
     }, 0);
-    console.log(availableItemsTotalPrice(), unavailableItemsTotalPrice);
 
     return availableItemsTotalPrice() + unavailableItemsTotalPrice;
   }
