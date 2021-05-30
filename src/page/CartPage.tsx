@@ -15,10 +15,11 @@ import useLocalStorage from "hooks/useLocalStorage";
 import Error from "components/Error";
 import Loader from "components/Loader";
 import CartItem from "components/CartItem";
+import Checkbox from "components/Checkbox";
 
 import { cartColumnStyle } from "styles/mixins";
 import { generateFlex } from "styles/utils";
-import Checkbox from "components/Checkbox";
+import { NavLink } from "react-router-dom";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -148,6 +149,7 @@ function CartPage() {
   if (error || errorCoupons) return <Error />;
 
   const cartItems = filterByCartIds(data);
+  const noCartItems = cartItems.length < 1;
 
   return (
     <Container>
@@ -182,8 +184,11 @@ function CartPage() {
           );
         })}
 
-        {cartItems.length < 1 && (
-          <div>{"장바구니에 담긴 상품이 없습니다."}</div>
+        {noCartItems && (
+          <NoCartItems>
+            <h2>{"장바구니에 담은 상품이 없습니다."}</h2>
+            <NavLink to={`/products`}>{"CONTINUE SHOPPING"}</NavLink>
+          </NoCartItems>
         )}
 
         <CouponSelect
@@ -192,6 +197,7 @@ function CartPage() {
         >
           <CouponSelectTitle>
             {selectedCoupon ? selectedCoupon.title : "쿠폰 선택"}
+            <Arrow open={openSelect}>{"\u2303"}</Arrow>
           </CouponSelectTitle>
 
           {openSelect && (
@@ -270,6 +276,32 @@ const TableHead = styled.div`
   ${cartColumnStyle}
 `;
 
+const NoCartItems = styled.div`
+  ${generateFlex("center", "center")};
+  flex-direction: column;
+  width: 100%;
+  padding: 100px 0;
+  border-top: 4px solid #000;
+  border-bottom: 1px solid #000;
+  text-align: center;
+  color: #000;
+  font-weight: 500;
+  font-size: 2em;
+  font-size: 2rem;
+
+  a {
+    ${generateFlex("center", "center")};
+    margin-top: 45px;
+    text-decoration: none;
+    border: 1px solid #a0a0a0;
+    color: #303033;
+    width: 400px;
+    height: 72px;
+    font-size: 26px;
+    font-weight: bolder;
+  }
+`;
+
 const CouponSelect = styled.div`
   position: relative;
   width: 400px;
@@ -278,13 +310,22 @@ const CouponSelect = styled.div`
 `;
 
 const CouponSelectTitle = styled.div`
-  ${generateFlex("center", "flex-start")}
+  ${generateFlex("center", "space-between")}
   width:100%;
   height: 45px;
   padding: 0 24px;
   border: 1px solid #d4d4d4;
   font-size: 16px;
   font-weight: bold;
+`;
+const Arrow = styled.span<{ open: boolean }>`
+  ${generateFlex("center", "center")}
+  display: inline-flex;
+  content: "\u2303";
+  width: 20px;
+  height: 20px;
+  padding-top: 5px;
+  transform: ${(props) => (props.open ? "rotate(0)" : "rotate(180deg)")};
 `;
 
 const CouponList = styled.ul`
