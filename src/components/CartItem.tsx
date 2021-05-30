@@ -5,6 +5,7 @@ import { TCartItem } from "store/types/cart";
 
 import { cartColumnStyle } from "styles/mixins";
 import { generateFlex } from "styles/utils";
+import Checkbox from "./Checkbox";
 
 interface Props {
   cartItem: TCartItem;
@@ -30,13 +31,9 @@ function CartItem({
   return (
     <Container>
       <ColCheckBox>
-        <CheckBox
-          type="checkbox"
+        <Checkbox
           checked={checked}
           onChange={() => handleCheck(cartItem.item_no)}
-          style={{
-            transform: "scale(1.5)",
-          }}
         />
       </ColCheckBox>
       <ColInfo>
@@ -90,11 +87,6 @@ const Container = styled.div`
 
 const ColCheckBox = styled.div`
   ${generateFlex("center", "center")}
-`;
-
-const CheckBox = styled.input`
-  transform: scale(1.5);
-  cursor: pointer;
 `;
 
 const ColInfo = styled.div`

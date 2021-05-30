@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import numeral from "numeral";
 
 import { RootState } from "store";
@@ -18,6 +18,7 @@ import CartItem from "components/CartItem";
 
 import { cartColumnStyle } from "styles/mixins";
 import { generateFlex } from "styles/utils";
+import Checkbox from "components/Checkbox";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -154,11 +155,9 @@ function CartPage() {
       <Table>
         <TableHead>
           <div>
-            <CheckBox
-              type="checkbox"
+            <Checkbox
               checked={cartItems.length === checkedIds.length}
               onChange={() => handleCheckAll(cartItems)}
-              style={{}}
             />
           </div>
 
@@ -269,11 +268,6 @@ const TableHead = styled.div`
     color: #000;
   }
   ${cartColumnStyle}
-`;
-
-const CheckBox = styled.input`
-  transform: scale(1.5);
-  cursor: pointer;
 `;
 
 const CouponSelect = styled.div`
