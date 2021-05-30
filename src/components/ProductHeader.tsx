@@ -33,6 +33,7 @@ const Container = styled.header`
 
   width: 100%;
   height: 100px;
+  padding: 0 12px;
 
   h1 {
     font-size: 48px;
@@ -43,7 +44,7 @@ const Container = styled.header`
 const CartPositioner = styled.div`
   position: absolute;
   top: 50%;
-  right: 0;
+  right: 12px;
   transform: translateY(-50%);
 `;
 
