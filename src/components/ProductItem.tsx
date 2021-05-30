@@ -44,8 +44,17 @@ function ProductItem({ product, inCart, handleCart }: Props) {
 export default ProductItem;
 
 const Container = styled.li`
-  width: 33.333%;
-  padding: 12px;
+  width: 32%;
+  margin-bottom: 12px;
+  margin-right: 1%;
+
+  @media only screen and (max-width: 768px) {
+    width: 49%;
+    margin-right: 0;
+  }
+  @media only screen and (max-width: 375px) {
+    width: 100%;
+  }
 `;
 
 const ImageWrap = styled.div`

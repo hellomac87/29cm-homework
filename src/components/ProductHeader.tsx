@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { ReactComponent as CartIcon } from "static/svg/shopping-cart.svg";
 import { useHistory } from "react-router";
 import logo from "static/image/29cm_logo.png";
+import { generateFlex } from "styles/utils";
 interface Props {
   cartCount: number;
 }
@@ -30,9 +31,7 @@ export default Header;
 const Container = styled.header`
   position: relative;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  ${generateFlex("center", "center")};
 
   width: 100%;
   height: 100px;
@@ -48,7 +47,10 @@ const Container = styled.header`
     }
     img {
       width: 200px;
-      vertical-align: bottom;
+      vertical-align: middle;
+      @media only screen and (max-width: 375px) {
+        width: 150px;
+      }
     }
   }
 `;

@@ -14,6 +14,7 @@ import Error from "components/Error";
 import ProductHeader from "components/ProductHeader";
 import ProductItem from "components/ProductItem";
 import Pagination from "components/Pagination";
+import { generateFlex } from "styles/utils";
 
 function ProductsPage() {
   const dispatch = useDispatch();
@@ -87,15 +88,17 @@ const Container = styled.div`
   max-width: 1280px;
   min-width: 375px;
   margin: 0 auto;
+  padding: 0 12px;
 
   padding-bottom: 50px;
 `;
 
 const List = styled.ul`
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  ${generateFlex("center", "flex-start")};
   flex-wrap: wrap;
 
   width: 100%;
+  @media only screen and (max-width: 768px) {
+    ${generateFlex("center", "space-between")};
+  }
 `;
