@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { ReactComponent as CartIcon } from "static/svg/shopping-cart.svg";
 import { useHistory } from "react-router";
-
+import logo from "static/image/29cm_logo.png";
 interface Props {
   cartCount: number;
 }
@@ -11,7 +11,10 @@ function Header({ cartCount }: Props) {
 
   return (
     <Container>
-      <h1>{"29cm"}</h1>
+      <h1>
+        <img src={logo} alt={"29cm logo"} />
+        <span>{"29cm"}</span>
+      </h1>
       <CartPositioner>
         <CartInner onClick={() => history.push(`/cart`)}>
           {cartCount > 0 && <CartItemCount>{cartCount}</CartItemCount>}
@@ -38,6 +41,15 @@ const Container = styled.header`
   h1 {
     font-size: 48px;
     font-weight: bold;
+    span {
+      position: absolute;
+      top: -9999px;
+      overflow: hidden;
+    }
+    img {
+      width: 200px;
+      vertical-align: bottom;
+    }
   }
 `;
 
