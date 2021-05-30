@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import logo from "static/image/29cm_logo.png";
+
 function HomePage() {
   return (
     <Container>
@@ -36,10 +37,11 @@ const Container = styled.main`
 
     background-color: #fff;
     color: #000;
-    font-size: 48px;
-    font-weight: bolder;
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 16px;
 
-    margin-bottom: 24px;
+    margin-bottom: 36px;
     & > img {
       width: 340px;
       margin-bottom: 8px;
@@ -52,8 +54,9 @@ const Links = styled.div`
   align-items: center;
   justify-content: center;
   a {
-    font-size: 24px;
+    font-size: 18px;
     padding: 0 12px;
+    font-weight: lighter;
     &:active,
     &:visited {
       color: #000;
