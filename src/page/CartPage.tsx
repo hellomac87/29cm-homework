@@ -239,7 +239,7 @@ function CartPage() {
         </CouponSelect>
 
         <TotalRow>
-          {"합계 금액 : "}
+          {"최종 결제 금액 : "}
           {calcTotalPrice(cartItems)}
           {"원"}
         </TotalRow>
