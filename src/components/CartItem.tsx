@@ -51,6 +51,10 @@ function CartItem({
             </UnAvailableMessage>
           )}
         </ColName>
+
+        <DeleteButton>
+          <span onClick={() => deleteCartItem(cartItem.item_no)}>{"X"}</span>
+        </DeleteButton>
       </ColInfo>
 
       <ColAmount>
@@ -72,9 +76,6 @@ function CartItem({
         {calcPriceByAmount(cartItem.price, cartItem.amount)}
         <span>{"원"}</span>
       </ColPrice>
-      <ColDelete>
-        <span onClick={() => deleteCartItem(cartItem.item_no)}>{"\u2716"}</span>
-      </ColDelete>
     </Container>
   );
 }
@@ -93,6 +94,7 @@ const ColCheckBox = styled.div`
 `;
 
 const ColInfo = styled.div`
+  position: relative;
   ${generateFlex("center", "center")}
 `;
 
@@ -163,7 +165,7 @@ const ColPrice = styled.div`
   ${generateFlex("center", "center")}
   font-size: 24px;
   font-weight: bold;
-  border-right: 1px solid #d4d4d4;
+
   span {
     padding-left: 2px;
     font-size: 14px;
@@ -171,9 +173,16 @@ const ColPrice = styled.div`
   }
 `;
 
-const ColDelete = styled.div`
+const DeleteButton = styled.div`
   ${generateFlex("center", "center")}
-  font-size: 24px;
+  font-size: 16px;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 24px;
+  height: 24px;
+  color: #d4d4d4;
+  border: 1px solid #d4d4d4;
   span {
     cursor: pointer;
   }

@@ -5,15 +5,12 @@ export const cartColumnStyle = css`
     width: 5%;
   }
   & > div:nth-child(2) {
-    width: 50%;
+    width: 55%;
   }
   & > div:nth-child(3) {
     width: 20%;
   }
   & > div:nth-child(4) {
     width: 20%;
-  }
-  & > div:nth-child(5) {
-    width: 5%;
   }
 `;

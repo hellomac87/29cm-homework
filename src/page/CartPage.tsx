@@ -180,7 +180,6 @@ function CartPage() {
           <div>{"상품정보"}</div>
           <div>{"수량"}</div>
           <div>{"가격"}</div>
-          <div />
         </TableHead>
 
         {cartItems.map((cartItem) => {
