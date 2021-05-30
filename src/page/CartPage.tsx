@@ -67,6 +67,7 @@ function CartPage() {
     const availableItems: TCartItem[] = [];
     const unavailableItems: TCartItem[] = [];
 
+    // 쿠폰 사용가능 상품과 불가능 상품 분리
     for (const cartItem of cartItems) {
       if (cartItem.availableCoupon === undefined) {
         availableItems.push(cartItem);
@@ -75,18 +76,22 @@ function CartPage() {
       }
     }
 
+    // 쿠폰 사용가능 상품 합계 계산
     const availableItemsTotalPrice = () => {
       let availableTotalPrice = 0;
+      // 합계계산
       for (const availableItem of availableItems) {
         availableTotalPrice += availableItem.price * availableItem.amount;
       }
       if (selectedCoupon && selectedCoupon.discountAmount) {
+        // 금액할인
         availableTotalPrice =
           availableTotalPrice > 0
             ? availableTotalPrice - selectedCoupon.discountAmount
             : availableTotalPrice;
       }
       if (selectedCoupon && selectedCoupon.discountRate) {
+        // 비율할인
         availableTotalPrice =
           availableTotalPrice -
           availableTotalPrice * (selectedCoupon.discountRate / 100);
@@ -95,11 +100,14 @@ function CartPage() {
       return availableTotalPrice;
     };
 
+    // 쿠폰 사용불가 상품 합계 계산
     const unavailableItemsTotalPrice = unavailableItems.reduce((acc, next) => {
       return acc + next.price * next.amount;
     }, 0);
 
     total = availableItemsTotalPrice() + unavailableItemsTotalPrice;
+    // 소수점 버림
+    total = Math.floor(total);
 
     return numeral(total).format("0,0");
   }
