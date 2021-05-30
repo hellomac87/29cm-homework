@@ -45,8 +45,11 @@ function CartItem({
           <Price>{`${numeral(cartItem.price).format("0,0")}원`}</Price>
           <br />
 
-          {cartItem.availableCoupon === false &&
-            "해당 상품은 쿠폰 사용이 불가합니다."}
+          {cartItem.availableCoupon === false && (
+            <UnAvailableMessage>
+              {"해당 상품은 쿠폰 사용이 불가합니다."}
+            </UnAvailableMessage>
+          )}
         </ColName>
       </ColInfo>
 
@@ -67,7 +70,7 @@ function CartItem({
       </ColAmount>
       <ColPrice>
         {calcPriceByAmount(cartItem.price, cartItem.amount)}
-        {"원"}
+        <span>{"원"}</span>
       </ColPrice>
       <ColDelete>
         <span onClick={() => deleteCartItem(cartItem.item_no)}>{"\u2716"}</span>
@@ -115,6 +118,13 @@ const Price = styled.div`
   margin-top: 14px;
 `;
 
+const UnAvailableMessage = styled.span`
+  font-size: 12px;
+  font-weight: normal;
+  color: #ff4800;
+  opacity: 0.6;
+`;
+
 const ColAmount = styled.div`
   ${generateFlex("center", "center")}
 
@@ -154,6 +164,11 @@ const ColPrice = styled.div`
   font-size: 24px;
   font-weight: bold;
   border-right: 1px solid #d4d4d4;
+  span {
+    padding-left: 2px;
+    font-size: 14px;
+    font-weight: normal;
+  }
 `;
 
 const ColDelete = styled.div`

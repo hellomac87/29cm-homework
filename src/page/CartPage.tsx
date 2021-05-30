@@ -167,7 +167,7 @@ function CartPage() {
 
   return (
     <Container>
-      <Title>{"CartPage"}</Title>
+      <Title>{"SHOPPING BAG"}</Title>
       <Table>
         <TableHead>
           <div>
@@ -210,14 +210,16 @@ function CartPage() {
           ref={selectRef}
         >
           <CouponSelectTitle>
-            {selectedCoupon ? selectedCoupon.title : "쿠폰 선택"}
+            {selectedCoupon
+              ? selectedCoupon.title
+              : `사용 가능 쿠폰 ${coupons.length}장`}
             <Arrow open={openSelect}>{"\u2303"}</Arrow>
           </CouponSelectTitle>
 
           {openSelect && (
             <CouponList>
               <CouponItem onClick={() => handleSelectCoupon(null)}>
-                {"쿠폰 선택하지 않기"}
+                {"선택 안함"}
               </CouponItem>
               {coupons.map((coupon, index) => {
                 const seleected =
@@ -239,9 +241,10 @@ function CartPage() {
         </CouponSelect>
 
         <TotalRow>
-          {"최종 결제 금액 : "}
+          <TotalText>{"최종 결제 금액 : "}</TotalText>
+
           {calcTotalPrice(cartItems)}
-          {"원"}
+          <TotalUnit>{"원"}</TotalUnit>
         </TotalRow>
       </Table>
     </Container>
@@ -253,6 +256,7 @@ export default CartPage;
 const Container = styled.div`
   width: 100%;
   max-width: 1280px;
+  min-width: 1080px;
   margin: 0 auto;
 
   padding: 20px 24px;
@@ -349,6 +353,7 @@ const CouponList = styled.ul`
   left: 0;
   border: solid #d4d4d4;
   border-width: 0 1px 1px;
+  background-color: #fff;
 `;
 
 const CouponItem = styled.li<{ selected?: boolean }>`
@@ -358,9 +363,14 @@ const CouponItem = styled.li<{ selected?: boolean }>`
   padding: 0 24px;
   font-size: 16px;
   font-weight: ${(props) => props.selected && "bold"};
-  color: ${(props) => (props.selected ? "#333" : "#d9d9d9")};
+  color: #000;
   & > span {
     margin-right: 10px;
+  }
+  transition: background-color 0.1s ease-in;
+  background-color: ${(props) => (props.selected ? "#ededed" : "#fff")};
+  &:hover {
+    background-color: #ededed;
   }
 `;
 
@@ -368,5 +378,16 @@ const TotalRow = styled.div`
   ${generateFlex("center", "flex-end")}
   width: 100%;
   font-size: 32px;
-  font-weight: bold;
+  font-weight: bolder;
+  color: #ff4800;
+`;
+
+const TotalText = styled.span`
+  font-size: 16px;
+  color: #000;
+  padding-right: 14px;
+`;
+const TotalUnit = styled.span`
+  font-size: 16px;
+  font-weight: normal;
 `;
