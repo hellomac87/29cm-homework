@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getProducts } from "data/productItems";
 import type { AppDispatch, RootState } from "store";
-import { CartItem } from "store/types/cart";
+import { TCartItem } from "store/types/cart";
 
 // Define a type for the slice state
 interface CartState {
   fetching: boolean;
   error: boolean;
-  data: CartItem[];
+  data: TCartItem[];
 }
 
 // Define the initial state using that type
@@ -25,7 +25,7 @@ export const cartSlice = createSlice({
     fetching: (state, action: PayloadAction) => {
       state.fetching = true;
     },
-    success: (state, action: PayloadAction<CartItem[]>) => {
+    success: (state, action: PayloadAction<TCartItem[]>) => {
       state.data = action.payload;
       state.fetching = false;
     },

@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 import numeral from "numeral";
 
 import { RootState } from "store";
-import { CartItem } from "store/types/cart";
+import { TCartItem } from "store/types/cart";
 import { Coupon } from "store/types/coupon";
 import { cartSlice, fetchCart } from "store/slices/cartSlice";
 import { fetchCoupons } from "store/slices/couponsSlice";
@@ -14,6 +14,10 @@ import useLocalStorage from "hooks/useLocalStorage";
 
 import Error from "components/Error";
 import Loader from "components/Loader";
+import CartItem from "components/CartItem";
+
+import { cartColumnStyle } from "styles/mixins";
+import { generateFlex } from "styles/utils";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -37,34 +41,29 @@ function CartPage() {
 
   useOutsideClick(selectRef, () => setOpenSelect(false));
 
-  function increaseAmout(item_no: number) {
+  function increaseAmount(item_no: number) {
     dispatch(cartSlice.actions.increaseAmountByItemNo(item_no));
   }
 
-  function decreaseAmout(item_no: number) {
+  function decreaseAmount(item_no: number) {
     dispatch(cartSlice.actions.decreaseAmountByItemNo(item_no));
   }
 
-  function calcPriceByAmount(price: number, amount: number) {
-    const result = price * amount;
-    return numeral(result).format("0,0");
-  }
-
-  function filterByCartIds(cartItems: CartItem[]) {
+  function filterByCartIds(cartItems: TCartItem[]) {
     return cartItems.filter((cartItem) =>
       cartItemIds.includes(cartItem.item_no)
     );
   }
 
-  function calcTotalPrice(cartItems: CartItem[]) {
+  function calcTotalPrice(cartItems: TCartItem[]) {
     let total = 0;
     // filter checkedIds
     cartItems = cartItems.filter((cartItem) =>
       checkedIds.includes(cartItem.item_no)
     );
 
-    const availableItems: CartItem[] = [];
-    const unavailableItems: CartItem[] = [];
+    const availableItems: TCartItem[] = [];
+    const unavailableItems: TCartItem[] = [];
 
     for (const cartItem of cartItems) {
       if (cartItem.availableCoupon === undefined) {
@@ -117,7 +116,7 @@ function CartPage() {
     }
   }
 
-  function handleCheckAll(cartItems: CartItem[]) {
+  function handleCheckAll(cartItems: TCartItem[]) {
     const removeAll = checkedIds.length === cartItems.length;
     if (removeAll) {
       setCheckedIds([]);
@@ -168,59 +167,19 @@ function CartPage() {
           <div>{"가격"}</div>
           <div />
         </TableHead>
-        {cartItems.map((product) => {
-          const checked = checkedIds.includes(product.item_no);
+
+        {cartItems.map((cartItem) => {
+          const checked = checkedIds.includes(cartItem.item_no);
           return (
-            <Row key={product.item_no}>
-              <ColCheckBox>
-                <CheckBox
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => handleCheck(product.item_no)}
-                  style={{
-                    transform: "scale(1.5)",
-                  }}
-                />
-              </ColCheckBox>
-              <ColInfo>
-                <ColImage>
-                  <img src={product.detail_image_url} alt={product.item_name} />
-                </ColImage>
-                <ColName>
-                  {product.item_name}
-                  <Price>{`${numeral(product.price).format("0,0")}원`}</Price>
-                  <br />
-
-                  {product.availableCoupon === false &&
-                    "해당 상품은 쿠폰 사용이 불가합니다."}
-                </ColName>
-              </ColInfo>
-
-              <ColAmount>
-                <AmountButton
-                  type="button"
-                  onClick={() => decreaseAmout(product.item_no)}
-                >
-                  {"\u2796"}
-                </AmountButton>
-                <Amount>{product.amount}</Amount>
-                <AmountButton
-                  type="button"
-                  onClick={() => increaseAmout(product.item_no)}
-                >
-                  {"\u2795"}
-                </AmountButton>
-              </ColAmount>
-              <ColPrice>
-                {calcPriceByAmount(product.price, product.amount)}
-                {"원"}
-              </ColPrice>
-              <ColDelete>
-                <span onClick={() => deleteCartItem(product.item_no)}>
-                  {"\u2716"}
-                </span>
-              </ColDelete>
-            </Row>
+            <CartItem
+              cartItem={cartItem}
+              key={cartItem.item_no}
+              checked={checked}
+              handleCheck={handleCheck}
+              increaseAmount={increaseAmount}
+              decreaseAmount={decreaseAmount}
+              deleteCartItem={deleteCartItem}
+            />
           );
         })}
 
@@ -272,39 +231,6 @@ function CartPage() {
 
 export default CartPage;
 
-const mixinColumnStyle = css`
-  & > div:nth-child(1) {
-    width: 5%;
-  }
-  & > div:nth-child(2) {
-    width: 50%;
-  }
-  & > div:nth-child(3) {
-    width: 20%;
-  }
-  & > div:nth-child(4) {
-    width: 20%;
-  }
-  & > div:nth-child(5) {
-    width: 5%;
-  }
-`;
-
-const generateFlex = (
-  alignItems: "center" | "flex-start" | "flex-end" | "stretch" = "stretch",
-  justifyContent:
-    | "center"
-    | "flex-start"
-    | "flex-end"
-    | "space-between" = "flex-start"
-) => {
-  return css`
-    display: flex;
-    align-items: ${alignItems};
-    justify-content: ${justifyContent};
-  `;
-};
-
 const Container = styled.div`
   width: 100%;
   max-width: 1280px;
@@ -342,98 +268,12 @@ const TableHead = styled.div`
     text-align: center;
     color: #000;
   }
-  ${mixinColumnStyle}
-`;
-
-const Row = styled.div`
-  ${generateFlex("stretch", "flex-start")}
-  width: 100%;
-  border-bottom: 1px solid #d4d4d4;
-  ${mixinColumnStyle}
-`;
-
-const ColCheckBox = styled.div`
-  ${generateFlex("center", "center")}
+  ${cartColumnStyle}
 `;
 
 const CheckBox = styled.input`
   transform: scale(1.5);
   cursor: pointer;
-`;
-
-const ColInfo = styled.div`
-  ${generateFlex("center", "center")}
-`;
-
-const ColImage = styled.div`
-  width: 30%;
-  img {
-    width: 100%;
-    vertical-align: bottom;
-  }
-`;
-
-const ColName = styled.div`
-  width: 70%;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const Price = styled.div`
-  width: 100%;
-  font-size: 14px;
-  font-weight: normal;
-  margin-top: 14px;
-`;
-
-const ColAmount = styled.div`
-  ${generateFlex("center", "center")}
-
-  width: 20%;
-  font-size: 24px;
-  font-weight: normal;
-
-  border: solid #d4d4d4;
-  border-width: 0 1px;
-`;
-
-const Amount = styled.div`
-  ${generateFlex("center", "center")}
-  display: inline-flex;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid #d4d4d4;
-  border-width: 1px 0;
-  font-size: 18px;
-`;
-
-const AmountButton = styled.button`
-  ${generateFlex("center", "center")}
-  width: 36px;
-  height: 36px;
-  border: 1px solid #d4d4d4;
-  background: #fff;
-  cursor: pointer;
-  transition: background-color 0.1s ease;
-  &:active {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const ColPrice = styled.div`
-  ${generateFlex("center", "center")}
-  font-size: 24px;
-  font-weight: bold;
-  border-right: 1px solid #d4d4d4;
-`;
-
-const ColDelete = styled.div`
-  ${generateFlex("center", "center")}
-  font-size: 24px;
-  span {
-    cursor: pointer;
-  }
 `;
 
 const CouponSelect = styled.div`
