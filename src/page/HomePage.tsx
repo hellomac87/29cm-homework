@@ -1,12 +1,13 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-
+import logo from "static/image/29cm_logo.png";
 function HomePage() {
   return (
     <Container>
       <h1>
-        {"29cm "}
-        {"FE-Homework"}
+        <img src={logo} alt={"29cm logo"} />
+
+        {"FE-HOMEWORK"}
       </h1>
 
       <Links>
@@ -33,13 +34,16 @@ const Container = styled.main`
     justify-content: center;
     flex-direction: column;
 
-    padding: 36px 86px;
-
-    background-color: #333;
-    color: #fff;
+    background-color: #fff;
+    color: #000;
     font-size: 48px;
+    font-weight: bolder;
 
     margin-bottom: 24px;
+    & > img {
+      width: 340px;
+      margin-bottom: 8px;
+    }
   }
 `;
 
@@ -50,5 +54,9 @@ const Links = styled.div`
   a {
     font-size: 24px;
     padding: 0 12px;
+    &:active,
+    &:visited {
+      color: #000;
+    }
   }
 `;
