@@ -1,5 +1,7 @@
+import numeral from "numeral";
 import { Product } from "store/types/products";
 import styled from "styled-components";
+import { generateFlex } from "styles/utils";
 
 interface Props {
   product: Product;
@@ -17,12 +19,17 @@ function ProductItem({ product, inCart, handleCart }: Props) {
       </ImageWrap>
 
       <Name>{product.item_name}</Name>
-      <div>{product.availableCoupon === false && "쿠폰 사용 불가"}</div>
+
       <Price>
-        {product.price}
+        {numeral(product.price).format("0,0")}
         {"원"}
+        {product.availableCoupon === false && (
+          <span>{"(쿠폰 사용 불가 상품)"}</span>
+        )}
       </Price>
-      <div>{product.score}</div>
+      <Score>
+        <span>{"\u2661"}</span> {product.score}
+      </Score>
       <CartButton
         type="button"
         onClick={() => handleCart(product.item_no)}
@@ -72,16 +79,37 @@ const ImagePositioner = styled.div`
 `;
 
 const Name = styled.div`
+  ${generateFlex("center", "flex-start")}
   width: 100%;
-  font-size: 16px;
+  min-height: 42px;
+  font-size: 18px;
   margin-bottom: 10px;
 `;
 
 const Price = styled.div`
   width: 100%;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
+
+  & > span {
+    display: inline-block;
+    padding: 0 4px;
+    font-size: 12px;
+    font-weight: normal;
+    color: #d4d4d4;
+  }
+`;
+
+const Score = styled.div`
+  ${generateFlex("center", "flex-start")}
+  width: 100%;
+  font-size: 14px;
+  margin-bottom: 10px;
+  & > span {
+    font-size: 20px;
+    padding-right: 2px;
+  }
 `;
 
 const CartButton = styled.button<{ inCart: boolean }>`
@@ -89,7 +117,7 @@ const CartButton = styled.button<{ inCart: boolean }>`
   align-items: center;
   justify-content: center;
 
-  width: 86px;
+  width: 100%;
   height: 30px;
   border: 1px solid #333;
 
