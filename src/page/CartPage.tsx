@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import numeral from "numeral";
 
@@ -19,7 +20,6 @@ import Checkbox from "components/Checkbox";
 
 import { cartColumnStyle } from "styles/mixins";
 import { generateFlex } from "styles/utils";
-import { NavLink } from "react-router-dom";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -77,7 +77,7 @@ function CartPage() {
     }
 
     // 쿠폰 사용가능 상품 합계 계산
-    const availableItemsTotalPrice = () => {
+    const calcAvailableCouponItemsTotalPrice = () => {
       let availableTotalPrice = 0;
       // 합계계산
       for (const availableItem of availableItems) {
@@ -101,11 +101,17 @@ function CartPage() {
     };
 
     // 쿠폰 사용불가 상품 합계 계산
-    const unavailableItemsTotalPrice = unavailableItems.reduce((acc, next) => {
-      return acc + next.price * next.amount;
-    }, 0);
+    const calcUnavailableCouponItemsTotalPrice = () => {
+      const unAvailableTotalPrice = unavailableItems.reduce((acc, next) => {
+        return acc + next.price * next.amount;
+      }, 0);
+      return unAvailableTotalPrice;
+    };
 
-    total = availableItemsTotalPrice() + unavailableItemsTotalPrice;
+    total =
+      calcAvailableCouponItemsTotalPrice() +
+      calcUnavailableCouponItemsTotalPrice();
+
     // 소수점 버림
     total = Math.floor(total);
 
