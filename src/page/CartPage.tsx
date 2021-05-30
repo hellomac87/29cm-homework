@@ -281,7 +281,7 @@ const NoCartItems = styled.div`
   flex-direction: column;
   width: 100%;
   padding: 100px 0;
-  border-top: 4px solid #000;
+
   border-bottom: 1px solid #000;
   text-align: center;
   color: #000;
