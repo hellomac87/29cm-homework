@@ -40,6 +40,8 @@ $ npm start
 
 브라우저를 열어 `localhost:3001` 주소로 실행합니다.
 
+[netlify live demo](https://agitated-murdock-ebd512.netlify.app/)
+
 ---
 
 ## stack
