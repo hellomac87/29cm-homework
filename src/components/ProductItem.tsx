@@ -46,7 +46,7 @@ export default ProductItem;
 const Container = styled.li`
   width: 32%;
   margin-bottom: 12px;
-  margin-right: 1%;
+  margin: 0.5%;
 
   @media only screen and (max-width: 768px) {
     width: 49%;

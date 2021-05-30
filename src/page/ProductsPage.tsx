@@ -96,8 +96,8 @@ const Container = styled.div`
 const List = styled.ul`
   ${generateFlex("center", "flex-start")};
   flex-wrap: wrap;
-
   width: 100%;
+  margin-bottom: 24px;
   @media only screen and (max-width: 768px) {
     ${generateFlex("center", "space-between")};
   }
