@@ -28,6 +28,16 @@ $ yarn install
 $ yarn start
 ```
 
+`yarn` 대신 `npm`을 사용 할 경우
+
+```sh
+$ npm install
+
+$ npm start
+```
+
+로 대체 가능합니다.
+
 브라우저를 열어 `localhost:3001` 주소로 실행합니다.
 
 ---
